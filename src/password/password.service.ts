@@ -11,9 +11,9 @@ export class PasswordService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository : Repository<User>,
-  ) {}
-  
+    private readonly userRepository: Repository<User>,
+  ) { }
+
   /*
     El metodo create() crea un usuario en la base de datos
     genera un password aleatorio
@@ -30,7 +30,7 @@ export class PasswordService {
           nombre: createUserDto.nombre.toLowerCase(),
         }
       })
-      if (!userBD) {
+      if (userBD) {
         return {
           message: 'Ya existe un Usuario con esa identificacion'
         };
@@ -68,18 +68,18 @@ export class PasswordService {
       hasta que el usuario que quiere crear un usuario termine.
   */
 
-    async createWithLock(createUserDto: CreateUserDto) {
-      // abre el archivo publico: BD.txt en modo lectura y escritura
-      const file = await fs.openSync('../../public/BD.txt', 'r+');
-      // bloquea el archivo para que no se pueda leer
-      lockfile.lock( file).then( async () => {
-        // se ejecuta crear usuario
-        await this.create(createUserDto);
-        // desbloquea el archivo
-        return lockfile.unlock(file);
-      });
-    }
+  async createWithLock(createUserDto: CreateUserDto) {
+    // abre el archivo publico: BD.txt en modo lectura y escritura
+    const file = await fs.openSync('../../public/BD.txt', 'r+');
+    // bloquea el archivo para que no se pueda leer
+    lockfile.lock(file).then(async () => {
+      // se ejecuta crear usuario
+      await this.create(createUserDto);
+      // desbloquea el archivo
+      return lockfile.unlock(file);
+    });
+  }
 
 
-  
+
 }
